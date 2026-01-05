@@ -23,3 +23,8 @@ application:
       expiration: 86400
       refresh-token:
         expiration: 604800
+
+logging:
+ level:
+  root: INFO
+  com.example: DEBUG

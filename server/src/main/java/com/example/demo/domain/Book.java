@@ -11,6 +11,8 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 @Data
@@ -50,4 +52,14 @@ public class Book {
     @LastModifiedBy
     @Column(insertable = false)
     private Integer lastModifiedBy;
+
+    private BigDecimal price;
+
+    @PrePersist
+    @PreUpdate
+    public void pricePrecisionConvertion() {
+        if (this.price != null) {
+            this.price = this.price.setScale(2, RoundingMode.HALF_UP); // 向远离零的方向四舍五入
+        }
+    }
 }

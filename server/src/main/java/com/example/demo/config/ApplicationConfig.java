@@ -22,8 +22,14 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> repository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        System.out.println("--- 系统启动：正在初始化 UserDetailsService Bean ---");
+        return username -> {
+            System.out.println("--- 收到登录请求，正在查询用户: " + username + " ---");
+            var user = repository.findByEmail(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            System.out.println("fullname:"+user.getFirstname()+" "+user.getLastname());
+            return user;
+        };
     }
 
     @Bean
@@ -31,11 +37,6 @@ public class ApplicationConfig {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
-    }
-
-    @Bean
-    public AuditorAware<Integer> auditorAware() {
-        return new ApplicationAuditAware();
     }
 
     @Bean
@@ -48,4 +49,9 @@ public class ApplicationConfig {
         return new BCryptPasswordEncoder();
     }
 
+
+    @Bean
+    public AuditorAware<Integer> auditorAware() {
+        return new ApplicationAuditAware();
+    }
 }

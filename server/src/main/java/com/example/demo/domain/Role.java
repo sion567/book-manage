@@ -36,7 +36,6 @@ public enum Role {
                     MANAGER_CREATE
             )
     )
-
     ;
 
     @Getter

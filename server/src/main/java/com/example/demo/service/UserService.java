@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.domain.User;
 import com.example.demo.dto.ChangePasswordRequest;
+import com.example.demo.dto.UserResponse;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,7 +19,7 @@ public class UserService {
     private final UserRepository repository;
 
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
-        User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
         // check if the current password is correct
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
@@ -34,5 +35,15 @@ public class UserService {
 
         // save the new password
         repository.save(user);
+    }
+
+    public UserResponse findByEmail(String email) {
+        User u = repository.findByEmail(email).get();
+        return UserResponse.builder()
+                .email(u.getEmail())
+                .firstname(u.getFirstname())
+                .lastname(u.getLastname())
+                .role(u.getRole().toString())
+                .build();
     }
 }
