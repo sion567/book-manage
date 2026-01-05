@@ -1,0 +1,49 @@
+<div class="book-list-container">
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="icon-search"></i>
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery" 
+        placeholder="搜索书名或作者..." 
+      />
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>书名</th>
+          <th>作者</th>
+          <th>分类</th>
+          <th>价格</th>
+          <th>更新日期</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (book of filteredBooks() | log:'Loop Item';  track book.id) {
+          <tr class="book-row">
+            <td class="font-medium">{{ book.title }}</td>
+            <td>{{ book.author }}</td>
+            <td><span class="category-badge">{{ book.category }}</span></td>
+            <td>{{ book.price | currency }}</td>
+            <td>{{ book.lastModified | date }}</td>
+            <td>
+              <button (click)="onDelete(book.id)" class="btn-icon delete" title="删除">
+                删除
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="empty-state">
+              <p>没有找到相关图书</p>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

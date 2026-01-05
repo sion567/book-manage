@@ -1,0 +1,82 @@
+.book-list-container {
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 12px;
+
+  .toolbar {
+    margin-bottom: 2rem;
+    
+    .search-box {
+      position: relative;
+      max-width: 400px;
+
+      input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        transition: border-color 0.2s;
+
+        &:focus {
+          outline: none;
+          border-color: #1976d2;
+          box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+        }
+      }
+    }
+  }
+
+  .modern-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+
+    th {
+      background: #f8f9fa;
+      padding: 1rem;
+      font-weight: 600;
+      color: #495057;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #f1f3f5;
+      vertical-align: middle;
+    }
+
+    .book-row {
+      &:hover {
+        background-color: #fcfcfc;
+      }
+    }
+
+    .category-badge {
+      background: #e3f2fd;
+      color: #1976d2;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+    }
+
+    .btn-icon.delete {
+      color: #dc3545;
+      background: none;
+      border: 1px solid #dc3545;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      
+      &:hover {
+        background: #dc3545;
+        color: white;
+      }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #adb5bd;
+    }
+  }
+}

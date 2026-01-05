@@ -1,0 +1,23 @@
+<nav class="navbar">
+  <div class="nav-brand">
+    <a routerLink="/">📚 图书管理</a>
+  </div>
+
+  <div class="nav-links">
+    <!-- 基础导航 -->
+    @if (isLoggedIn()) {
+      <a routerLink="/dashboard" routerLinkActive="active">控制台</a>
+      <a routerLink="/books" routerLinkActive="active">图书库</a>
+    }
+
+    <div class="nav-auth">
+      @if (isLoggedIn()) {
+        <span class="user-greeting">你好, {{ user()?.username }}</span>
+        <button (click)="logout()" class="btn-logout">退出</button>
+      } @else {
+        <a routerLink="/login" class="btn-login">登录</a>
+        <a routerLink="/register" class="btn-register">注册</a>
+      }
+    </div>
+  </div>
+</nav>

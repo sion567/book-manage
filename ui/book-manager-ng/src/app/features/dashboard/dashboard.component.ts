@@ -1,0 +1,70 @@
+import { Component, inject, computed } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { AuthService } from '@core/auth/auth.service';
+import { BookService } from '../books/book.service';
+
+@Component({
+  selector: 'app-dashboard',
+  standalone: true,
+  // 推荐将所有 UI 逻辑放在 template 块中，简单直观
+  imports: [CommonModule],
+  template: `
+    <div class="dashboard-container">
+      <header>
+        <h1>🚀 控制台</h1>
+        <div class="user-info">
+          @if (user()) {
+            <span>欢迎回来, <strong>{{ user()?.firstname }}</strong>!</span>
+            <button (click)="onLogout()" class="logout-btn">退出登录</button>
+          }
+        </div>
+      </header>
+
+      <main class="stats-grid">
+        <div class="stat-card">
+          <h3>图书总数</h3>
+          <p class="big-number">{{ totalBooks() }}</p>
+        </div>
+        
+        <div class="stat-card">
+          <h3>系统状态</h3>
+          <p class="status-tag">运行中</p>
+        </div>
+      </main>
+
+      <section class="quick-actions">
+        <button class="action-btn">管理图书</button>
+        <button class="action-btn">查看个人资料</button>
+      </section>
+    </div>
+  `,
+  styles: [`
+    .dashboard-container { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 1rem; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+    .stat-card { background: #f8f9fa; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center; }
+    .big-number { font-size: 2.5rem; font-weight: bold; color: #1976d2; margin: 0; }
+    .logout-btn { background: #ff4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
+    .quick-actions { margin-top: 3rem; display: flex; gap: 1rem; }
+    .action-btn { padding: 1rem 2rem; border: 1px solid #1976d2; background: white; color: #1976d2; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+    .action-btn:hover { background: #1976d2; color: white; }
+  `]
+})
+export default class DashboardComponent {
+  // 注入服务
+  private authService = inject(AuthService);
+  private bookService = inject(BookService);
+
+  // 使用 Signal 映射数据
+  // user() 会自动从 AuthService 的 currentUser Signal 获取最新值
+  user = this.authService.currentUser;
+
+  // 使用 computed 计算图书总数（派生状态）
+  totalBooks = computed(() => this.bookService.books().length);
+
+  onLogout() {
+    if (confirm('确定要退出登录吗？')) {
+      this.authService.logout();
+    }
+  }
+}
