@@ -38,18 +38,18 @@ public class DemoApplication {
 		return args -> {
 			var admin = RegisterRequest.builder()
 					.firstname("Admin")
-					.lastname("Admin")
-					.email("admin@mail.com")
-					.password("password")
+					.lastname("x")
+					.email("a@test.com")
+					.password("111111")
 					.role(ADMIN)
 					.build();
 			System.out.println("Admin token: " + service.register(admin).getAccessToken());
 
 			var manager = RegisterRequest.builder()
-					.firstname("Admin")
-					.lastname("Admin")
-					.email("manager@mail.com")
-					.password("password")
+					.firstname("manager")
+					.lastname("y")
+					.email("m@test.com")
+					.password("111111")
 					.role(MANAGER)
 					.build();
 			System.out.println("Manager token: " + service.register(manager).getAccessToken());
