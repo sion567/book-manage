@@ -36,4 +36,6 @@ export const bookSchema = {
   ],
   showQuestionNumbers: 'off',
   completeText: '提交保存',
+  completedHtml: '<h3>感謝您的提交！</h3><p>圖書信息已成功保存到系統。</p>',
+  showCompletedPage: true,
 };

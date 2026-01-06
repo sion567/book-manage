@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { api } from '../api/apiClient';
 
 const BookList = () => {
   const [books, setBooks] = useState([]);
 
   const loadBooks = () => {
-    fetch('http://localhost:8080/api/v1/books')
-      .then((res) => res.json())
+    api
+      .get('/books')
       .then((data) => setBooks(data));
   };
 
@@ -15,8 +16,9 @@ const BookList = () => {
   }, []);
 
   const deleteBook = (id) => {
-    if (window.confirm('確定要刪除嗎？')) {
-      fetch(`http://localhost:8080/api/v1/books/${id}`, { method: 'DELETE' }).then(() =>
+    if (window.confirm('确定要删除么？')) {
+        api
+      .delete(`/books${id}`).then(() =>
         loadBooks(),
       );
     }
@@ -25,27 +27,27 @@ const BookList = () => {
   return (
     <div style={{ padding: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <h2>圖書列表</h2>
+        <h2>图书列表</h2>
         <Link
           to="/add"
           style={{
-            padding: '10px 20px',
+            padding: '10px 10px',
             background: '#007bff',
             color: '#fff',
             textDecoration: 'none',
             borderRadius: '4px',
           }}
         >
-          新增圖書
+          新增图书
         </Link>
       </div>
       <table border="1" width="100%" style={{ borderCollapse: 'collapse', textAlign: 'left' }}>
         <thead>
           <tr style={{ background: '#f4f4f4' }}>
-            <th>標題</th>
+            <th>标题</th>
             <th>作者</th>
-            <th>價格</th>
-            <th>分類</th>
+            <th>价格</th>
+            <th>分类</th>
             <th>操作</th>
           </tr>
         </thead>
