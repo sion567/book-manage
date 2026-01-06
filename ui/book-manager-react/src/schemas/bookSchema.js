@@ -1,0 +1,39 @@
+export const bookSchema = {
+  title: '图书管理系统',
+  description: '请填写图书详细信息',
+  elements: [
+    { type: 'text', name: 'title', title: '图书标题', isRequired: true },
+    { type: 'text', name: 'author', title: '作者', isRequired: true, startWithNewLine: false },
+    { type: 'text', name: 'isbn', title: 'ISBN', isRequired: true },
+    {
+      type: 'text',
+      name: 'price',
+      title: '售价',
+      inputType: 'number',
+      isRequired: true,
+      startWithNewLine: false,
+      validators: [{ type: 'numeric', minValue: 0.01 }],
+    },
+    {
+      type: 'dropdown',
+      name: 'categoryId',
+      title: '图书分类',
+      isRequired: true,
+      choicesByUrl: {
+        url: 'http://localhost:8080/api/v1/books/categories',
+        valueName: 'id',
+        titleName: 'name',
+      },
+    },
+    {
+      type: 'text',
+      name: 'publicationDate',
+      title: '发布日期',
+      inputType: 'date',
+      isRequired: true,
+      startWithNewLine: false,
+    },
+  ],
+  showQuestionNumbers: 'off',
+  completeText: '提交保存',
+};
