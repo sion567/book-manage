@@ -18,14 +18,14 @@ describe('AuthService', () => {
         AuthService,
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: Router, useValue: routerSpy }
-      ]
+        { provide: Router, useValue: routerSpy },
+      ],
     });
 
     service = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    
+
     // 测试前清空缓存
     localStorage.clear();
   });
@@ -48,12 +48,12 @@ describe('AuthService', () => {
   it('3. 登录成功后应该更新 Signal 状态并保存 Token', () => {
     const mockResponse = {
       token: 'fake-jwt-token',
-      user: { username: 'admin' }
+      user: { username: 'admin' },
     };
     const credentials = { username: 'admin', password: 'password123' };
 
     // 订阅登录方法
-    service.login(credentials).subscribe(response => {
+    service.login(credentials).subscribe((response) => {
       expect(response).toEqual(mockResponse);
     });
 
@@ -63,7 +63,7 @@ describe('AuthService', () => {
 
     expect(service.isLoggedIn()).toBeTrue();
     expect(service.currentUser()?.username).toBe('admin');
-    
+
     // 验证 LocalStorage
     expect(localStorage.getItem('token')).toBe('fake-jwt-token');
   });

@@ -1,7 +1,6 @@
 <div class="detail-container">
   <div class="breadcrumb">
-    <a routerLink="/dashboard">控制台</a> / 
-    <a routerLink="/books">图书列表</a> / 详情
+    <a routerLink="/dashboard">控制台</a> / <a routerLink="/books">图书列表</a> / 详情
   </div>
 
   @if (loading()) {
@@ -13,11 +12,11 @@
           <h2>{{ b.title }}</h2>
           <span class="badge">{{ b.category }}</span>
         </div>
-        
+
         <div class="book-info">
           <p><strong>作者：</strong> {{ b.author }}</p>
           <p><strong>图书编号：</strong> {{ b.id }}</p>
-          <p class="price"><strong>定价：</strong> {{ b.price | currency:'CNY' }}</p>
+          <p class="price"><strong>定价：</strong> {{ b.price | currency: 'CNY' }}</p>
         </div>
 
         <div class="book-description">
@@ -26,7 +25,7 @@
         </div>
 
         <div class="actions">
-          <button class="btn-edit">编辑图书</button>
+          <button [routerLink]="['/books/edit', b.id]" class="btn-icon edit">编辑图书</button>
           <button routerLink="/books" class="btn-back">返回列表</button>
         </div>
       </div>

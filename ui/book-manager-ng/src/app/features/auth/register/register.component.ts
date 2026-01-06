@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from'@core/auth/auth.service';
+import { AuthService } from '@core/auth/auth.service';
 import { LogPipe } from '@shared/pipes/log.pipe';
 
 @Component({
@@ -13,14 +13,14 @@ import { LogPipe } from '@shared/pipes/log.pipe';
     <div class="auth-container">
       <h2>新用户注册</h2>
       <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
-        <input type="text" formControlName="firstname" placeholder="设置用户姓" /><br/>
-        <input type="text" formControlName="lastname" placeholder="设置用户名" /><br/>
-        <input type="email" formControlName="email" placeholder="电子邮箱" /><br/>
-        <input type="password" formControlName="password" placeholder="设置密码" /><br/>
+        <input type="text" formControlName="firstname" placeholder="设置用户姓" /><br />
+        <input type="text" formControlName="lastname" placeholder="设置用户名" /><br />
+        <input type="email" formControlName="email" placeholder="电子邮箱" /><br />
+        <input type="password" formControlName="password" placeholder="设置密码" /><br />
         <button type="submit" [disabled]="registerForm.invalid">提交注册</button>
       </form>
     </div>
-  `
+  `,
 })
 export class RegisterComponent {
   private fb = inject(NonNullableFormBuilder);
@@ -36,7 +36,7 @@ export class RegisterComponent {
     lastname: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
-    role: ['USER']
+    role: ['USER'],
   });
 
   onRegister() {
@@ -55,7 +55,7 @@ export class RegisterComponent {
       error: (error) => {
         this.isSubmitting.set(false);
         this.errorMessage.set(error.error?.message || '注册失败，请稍后再试。');
-      }
+      },
     });
   }
 }

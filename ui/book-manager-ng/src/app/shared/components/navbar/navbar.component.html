@@ -12,7 +12,7 @@
 
     <div class="nav-auth">
       @if (isLoggedIn()) {
-        <span class="user-greeting">你好, {{ user()?.username }}</span>
+        <span class="user-greeting">你好, {{ user()?.firstname }}</span>
         <button (click)="logout()" class="btn-logout">退出</button>
       } @else {
         <a routerLink="/login" class="btn-login">登录</a>

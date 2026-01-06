@@ -26,7 +26,7 @@ export class AuthService {
    */
   login(credentials: any) {
     return this.http.post<AuthResponse>(`${this.API_URL}/authenticate`, credentials).pipe(
-      tap(response => {
+      tap((response) => {
         console.log('后端原始响应:', response); // 调试用
         if (response) {
           localStorage.setItem('access_token', response.access_token);
@@ -35,24 +35,32 @@ export class AuthService {
           console.error('错误：响应体中没有找到 token 字段！');
         }
       }),
-      switchMap(response => {
+      switchMap((response) => {
         // 只有拿到 token 才去获取 Profile
         return response.access_token ? this.fetchUserProfile() : of(null);
       }),
-      catchError(error => {
+      catchError((error) => {
         console.error('登录失败:', error);
         return of(null); // 返回空观察值处理错误
-      })
+      }),
     );
   }
 
   fetchUserProfile() {
     return this.http.get<User>(`${this.USER_URL}/profile`).pipe(
-      tap(user => {
+      tap((user) => {
         // 2. 更新 Signal 状态
         this.currentUserSignal.set(user);
-      })
+      }),
     );
+  }
+
+  refreshToken(token: string) {
+    // 注意：刷新接口通常需要发送 refresh_token
+    // 建议直接在 body 或 header 中传递
+    return this.http.post<any>(`${this.API_URL}/refresh-token`, {
+      refresh_token: token,
+    });
   }
 
   /**

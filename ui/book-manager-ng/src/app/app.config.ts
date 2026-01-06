@@ -1,5 +1,5 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, LOCALE_ID} from '@angular/core';
-import { provideRouter , withComponentInputBinding} from '@angular/router';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, LOCALE_ID } from '@angular/core';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
 import { apiInterceptor } from '@core/interceptors/api.interceptor';
 import { registerLocaleData } from '@angular/common';
@@ -14,9 +14,8 @@ export const appConfig: ApplicationConfig = {
     { provide: LOCALE_ID, useValue: 'zh-Hans' }, // 设置全局语言为中文
     provideHttpClient(withFetch(), withInterceptors([apiInterceptor])),
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes, withComponentInputBinding())
-  ]
+    provideRouter(routes, withComponentInputBinding()),
+  ],
 };
-
 
 // id = input.required() 正常工作,需要withComponentInputBinding()

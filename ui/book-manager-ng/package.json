@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "format": "prettier --write \"src/**/*.{ts,html,scss,css}\""
   },
   "prettier": {
     "printWidth": 100,
@@ -37,6 +38,8 @@
     "@angular/cli": "^21.0.4",
     "@angular/compiler-cli": "^21.0.0",
     "@types/jasmine": "^5.1.13",
+    "prettier": "^3.7.4",
+    "prettier-eslint": "^16.4.2",
     "typescript": "~5.9.2"
   }
 }

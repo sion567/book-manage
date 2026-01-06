@@ -7,7 +7,7 @@ import { AuthService } from '@core/auth/auth.service';
   standalone: true,
   imports: [RouterLink, RouterLinkActive],
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.scss'
+  styleUrl: './navbar.component.scss',
 })
 export class NavbarComponent {
   // 注入认证服务

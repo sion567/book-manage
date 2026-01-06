@@ -1,0 +1,81 @@
+<div class="detail-container">
+  <!-- 面包屑导航 -->
+  <nav class="breadcrumb">
+    <a routerLink="/dashboard">控制台</a>
+    <span class="separator">/</span>
+    <a routerLink="/books">图书列表</a>
+    <span class="separator">/</span>
+    <span class="current">{{ isEditMode() ? '修改图书' : '添加新书' }}</span>
+  </nav>
+
+  <div class="card">
+    <header class="card-header">
+      <h2>{{ isEditMode() ? '编辑图书详情' : '登记新图书' }}</h2>
+      <p class="subtitle">请准确填写图书的基本信息与分类</p>
+    </header>
+
+    <form [formGroup]="bookForm" (ngSubmit)="onSubmit()" class="book-form">
+      <div class="form-grid">
+        <!-- 标题 - 占满整行 -->
+        <div class="form-group full-width">
+          <label>图书标题</label>
+          <input type="text" formControlName="title" placeholder="例如：Spring Boot 2026 实战" />
+          <small
+            class="error"
+            *ngIf="bookForm.get('title')?.invalid && bookForm.get('title')?.touched"
+          >
+            标题是必填项
+          </small>
+        </div>
+
+        <!-- 作者 -->
+        <div class="form-group">
+          <label>作者</label>
+          <input type="text" formControlName="author" placeholder="作者姓名" />
+        </div>
+
+        <!-- ISBN -->
+        <div class="form-group">
+          <label>ISBN 编号</label>
+          <input type="text" formControlName="isbn" placeholder="978-x-xxx-xxxxx-x" />
+        </div>
+
+        <!-- 价格 -->
+        <div class="form-group">
+          <label>售价 (CNY)</label>
+          <input type="number" step="0.01" formControlName="price" placeholder="0.00" />
+        </div>
+        <div class="form-group">
+          <label>发布日期</label>
+          <input type="date" formControlName="publicationDate" class="form-control" />
+          <small
+            class="error"
+            *ngIf="
+              bookForm.get('publicationDate')?.invalid && bookForm.get('publicationDate')?.touched
+            "
+          >
+            请选择发布日期
+          </small>
+        </div>
+        <!-- 分类 -->
+        <div class="form-group">
+          <label>所属分类</label>
+          <select formControlName="categoryId">
+            <option [ngValue]="null">--- 请选择图书分类 ---</option>
+            <option *ngFor="let cat of categories()" [value]="cat.id">
+              {{ cat.name }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 操作按钮 -->
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="goBack()">取消</button>
+        <button type="submit" class="btn-primary" [disabled]="bookForm.invalid">
+          {{ isEditMode() ? '保存修改' : '确认添加' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
