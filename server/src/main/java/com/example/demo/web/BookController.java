@@ -2,6 +2,7 @@ package com.example.demo.web;
 
 
 import com.example.demo.domain.Book;
+import com.example.demo.domain.Category;
 import com.example.demo.dto.BookRequest;
 import com.example.demo.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +44,7 @@ public class BookController {
         service.save(request);
         return ResponseEntity.accepted().build();
     }
+
     @Operation(
             description = "find",
             summary = "Get All Books",
@@ -61,6 +64,14 @@ public class BookController {
     public ResponseEntity<List<Book>> find() {
         return ResponseEntity.ok(service.findAll());
     }
+
+    @GetMapping("/{book-id}")
+    public ResponseEntity<Book> findById(
+            @PathVariable("book-id") Integer bookId
+    ) {
+        return ResponseEntity.ok(service.findById(bookId));
+    }
+
     @Operation(
             description = "update",
             summary = "Update Books",
@@ -76,10 +87,17 @@ public class BookController {
             }
 
     )
-    @PutMapping
-    public String update() {
-        return "PUT:: management controller";
+
+    @PutMapping("/{book-id}")
+    public ResponseEntity<Void> update(@PathVariable("book-id") Integer bookId, @Valid @RequestBody BookRequest request) {
+        if (request.getId() != null && !bookId.equals(request.getId())) {
+            throw new IllegalArgumentException("路径 ID 与请求体 ID 不一致");
+        }
+        service.update(bookId, request);
+        // 返回 202 Accepted 或 204 No Content
+        return ResponseEntity.accepted().build();
     }
+
     @Operation(
             description = "delete",
             summary = "Delete Books",
@@ -95,8 +113,19 @@ public class BookController {
             }
 
     )
-    @DeleteMapping
-    public String delete() {
-        return "DELETE:: management controller";
+    @DeleteMapping("/{book-id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable("book-id") Integer bookId) {
+        service.delete(bookId);
+    }
+
+    public List<Book> searchByTitleOrAuthor(String query) {
+        return service.searchByTitleOrAuthor(query);
+    }
+
+
+    @GetMapping("/categories")
+    public ResponseEntity<List<Category>> findCategories() {
+        return ResponseEntity.ok(service.findAllCategory());
     }
 }

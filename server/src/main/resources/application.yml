@@ -15,16 +15,20 @@ spring:
       hibernate:
         format_sql: true
     database-platform: org.hibernate.dialect.H2Dialect
+  jackson:
+    date-format: yyyy-MM-dd
+    time-zone: GMT+8
 application:
   security:
     jwt:
       issuer: my-system
       audience: my-client
-      expiration: 86400
+      expiration: 60
       refresh-token:
-        expiration: 604800
+        expiration: 300
 
 logging:
  level:
-  root: INFO
-  com.example: DEBUG
+   root:
+     com.example: DEBUG
+     org.apache.catalina: DEBUG

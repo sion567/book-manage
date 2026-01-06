@@ -6,10 +6,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -35,7 +37,15 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role.getAuthorities();
+        // 1. 将权限加入列表 (例如: "admin:read")
+        var authorities = role.getPermissions()
+                .stream()
+                .map(p -> new SimpleGrantedAuthority(p.getPermission()))
+                .collect(Collectors.toList());
+
+        // 2. 将角色也加入列表 (必须加 ROLE_ 前缀，例如: "ROLE_ADMIN")
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return authorities;
     }
 
     @Override

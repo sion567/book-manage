@@ -15,7 +15,9 @@ import static com.example.demo.domain.Permission.*;
 @RequiredArgsConstructor
 public enum Role {
 
-    USER(Collections.emptySet()),
+    USER(Set.of(
+            USER_READ
+    )),
     ADMIN(
             Set.of(
                     ADMIN_READ,
@@ -25,7 +27,8 @@ public enum Role {
                     MANAGER_READ,
                     MANAGER_UPDATE,
                     MANAGER_DELETE,
-                    MANAGER_CREATE
+                    MANAGER_CREATE,
+                    USER_READ
             )
     ),
     MANAGER(
@@ -33,20 +36,12 @@ public enum Role {
                     MANAGER_READ,
                     MANAGER_UPDATE,
                     MANAGER_DELETE,
-                    MANAGER_CREATE
+                    MANAGER_CREATE,
+                    USER_READ
             )
     )
     ;
 
     @Getter
     private final Set<Permission> permissions;
-
-    public List<SimpleGrantedAuthority> getAuthorities() {
-        var authorities = getPermissions()
-                .stream()
-                .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
-                .collect(Collectors.toList());
-        authorities.add(new SimpleGrantedAuthority("ROLE_" + this.name()));
-        return authorities;
-    }
 }
