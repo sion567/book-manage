@@ -3,10 +3,12 @@ package com.example.demo.service;
 import com.example.demo.domain.Book;
 import com.example.demo.domain.Category;
 import com.example.demo.dto.BookRequest;
+import com.example.demo.event.DataChangedEvent;
 import com.example.demo.repository.BookRepository;
 import com.example.demo.repository.CategoryRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,9 +20,10 @@ public class BookService {
 
     private final BookRepository repository;
     private final CategoryRepository categoryRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public void save(BookRequest request) {
+    public Integer save(BookRequest request) {
         Category category = categoryRepository.findById(request.getCategoryId()).get();
         var book = Book.builder()
                 .id(request.getId())
@@ -31,7 +34,9 @@ public class BookService {
                 .publicationDate(request.getPublicationDate())
                 .category(category)
                 .build();
-        repository.save(book);
+        var id = repository.save(book).getId();
+        eventPublisher.publishEvent(new DataChangedEvent(this));
+        return id;
     }
 
     public List<Book> findAll() {

@@ -13,7 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -41,8 +43,13 @@ public class BookController {
     )
     @PostMapping
     public ResponseEntity<?> save(@Valid @RequestBody BookRequest request) {
-        service.save(request);
-        return ResponseEntity.accepted().build();
+        Integer id = service.save(request);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(id)
+                .toUri();
+        return ResponseEntity.created(location).build();
     }
 
     @Operation(
@@ -66,9 +73,7 @@ public class BookController {
     }
 
     @GetMapping("/{book-id}")
-    public ResponseEntity<Book> findById(
-            @PathVariable("book-id") Integer bookId
-    ) {
+    public ResponseEntity<Book> findById(@PathVariable("book-id") Integer bookId) {
         return ResponseEntity.ok(service.findById(bookId));
     }
 
@@ -95,7 +100,8 @@ public class BookController {
         }
         service.update(bookId, request);
         // 返回 202 Accepted 或 204 No Content
-        return ResponseEntity.accepted().build();
+//        return ResponseEntity.accepted().build(); //语义灵活。请求已经接受，正在处理。前端检查 res.ok 即可
+        return ResponseEntity.noContent().build(); // 传统规范，不可调用 res.json()
     }
 
     @Operation(
