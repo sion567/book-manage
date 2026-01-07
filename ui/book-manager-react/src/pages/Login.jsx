@@ -19,7 +19,6 @@ const Login = () => {
       try {
         // 1. 调用登录（unwrap 会解开 Promise 并直接返回 data 或抛出 error）
         const result = await login(sender.data).unwrap();
-        console.log("result",result);
         // 2. 存储 Token
         localStorage.setItem('access_token', result.access_token);
         localStorage.setItem('refresh_token', result.refresh_token);

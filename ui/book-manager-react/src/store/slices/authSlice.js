@@ -21,7 +21,7 @@ const authSlice = createSlice({
     builder.addMatcher(
       // 自动监听 authApi 中 login 这个 endpoint 的成功状态
       authApi.endpoints.login.matchFulfilled,
-      (state, payload) => {
+      (state, {payload}) => {  // 第二个参数是完整的 action 对象
         state.user = payload.user;
         state.token = payload.access_token;
         // 登录后的状态同步在这里一站式完成
