@@ -1,15 +1,17 @@
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { logout } from '../store/slices/authSlice';
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const pathname = location.pathname;
 
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const { isAuthenticated, user } = useSelector((state) => state.auth); // 使用 useSelector 读取数据。取值
+  const dispatch = useDispatch(); //useDispatch 发送动作。改值
 
   const handleLogout = () => {
-    localStorage.clear();
+    dispatch(logout());
     navigate('/login');
   };
 

@@ -2,15 +2,18 @@ import React, { useMemo, useEffect } from 'react';
 import { Model } from 'survey-core';
 import { Survey } from 'survey-react-ui';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { useLoginMutation } from '../store/services/authApi';
+import { useLoginMutation, useLazyGetProfileQuery } from '../store/services/authApi';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../store/slices/authSlice';
 import { loginSchema } from '../schemas/authSchema';
 
 const Login = () => {
   const navigate = useNavigate();
   // 获取执行函数和状态对象
   const [login, { isLoading, error }] = useLoginMutation();
+  const [triggerGetProfile] = useLazyGetProfileQuery(); // 获取触发函数
   const survey = useMemo(() => new Model(loginSchema), []);
-
+  const dispatch = useDispatch();
   const location = useLocation(); // 返回一个当前url的地址信息的对象
   const from = location.state?.from?.pathname || '/';
 
@@ -19,10 +22,10 @@ const Login = () => {
       try {
         // 1. 调用登录（unwrap 会解开 Promise 并直接返回 data 或抛出 error）
         const result = await login(sender.data).unwrap();
-        // 2. 存储 Token
         localStorage.setItem('access_token', result.access_token);
         localStorage.setItem('refresh_token', result.refresh_token);
-        // 3. 跳转
+        const userProfile = await triggerGetProfile().unwrap();
+        dispatch(setUser(userProfile));
         navigate(from, { replace: true });
       } catch (err) {
         alert('登录失败，请检查邮箱或者密码。');
