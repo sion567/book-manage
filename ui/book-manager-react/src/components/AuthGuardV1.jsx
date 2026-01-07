@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 
 const AuthGuardV1 = ({ children }) => {
   const token = localStorage.getItem('access_token');

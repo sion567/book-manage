@@ -6,9 +6,7 @@ const BookList = () => {
   const [books, setBooks] = useState([]);
 
   const loadBooks = () => {
-    api
-      .get('/books')
-      .then((data) => setBooks(data));
+    api.get('/books').then((data) => setBooks(data));
   };
 
   useEffect(() => {
@@ -17,10 +15,7 @@ const BookList = () => {
 
   const deleteBook = (id) => {
     if (window.confirm('确定要删除么？')) {
-        api
-      .delete(`/books${id}`).then(() =>
-        loadBooks(),
-      );
+      api.delete(`/books${id}`).then(() => loadBooks());
     }
   };
 

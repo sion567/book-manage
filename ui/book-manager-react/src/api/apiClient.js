@@ -22,7 +22,7 @@ const apiClient = async (endpoint, { body, ...customConfig } = {}) => {
   const request = async () => {
     const response = await fetch(`${BASE_URL}${endpoint}`, config);
 
-    if (response.status === 403 && !endpoint.includes('/auth/refresh-token')) {
+    if (response.status === 401 && !endpoint.includes('/auth/refresh-token')) {
       if (!isRefreshing) {
         isRefreshing = true;
         const refreshToken = localStorage.getItem('refresh_token');
@@ -35,8 +35,9 @@ const apiClient = async (endpoint, { body, ...customConfig } = {}) => {
         try {
           const refreshRes = await fetch(`${BASE_URL}/auth/refresh-token`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ refresh_token: refreshToken }),
+            headers: { 
+                'Authorization': `Bearer ${refreshToken}`
+            }
           });
 
           if (!refreshRes.ok) throw new Error('Refresh failed');

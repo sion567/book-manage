@@ -2,28 +2,33 @@ import React, { useMemo, useEffect } from 'react';
 import { Model } from 'survey-core';
 import { Survey } from 'survey-react-ui';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useLoginMutation } from '../store/services/authApi';
 import { loginSchema } from '../schemas/authSchema';
-import { api } from '../api/apiClient';
 
 const Login = () => {
   const navigate = useNavigate();
+  // 获取执行函数和状态对象
+  const [login, { isLoading, error }] = useLoginMutation();
   const survey = useMemo(() => new Model(loginSchema), []);
 
   const location = useLocation(); // 返回一个当前url的地址信息的对象
   const from = location.state?.from?.pathname || '/';
 
   useEffect(() => {
-    const handleLogin = (sender) => {
-      api
-        .post('/auth/authenticate', sender.data)
-        .then((data) => {
-          if (data.access_token) {
-            localStorage.setItem('access_token', data.access_token);
-            localStorage.setItem('refresh_token', data.refresh_token);
-            navigate(from, { replace: true });
-          }
-        })
-        .catch(() => alert('登录失败，请检查邮箱或者密码。'));
+    const handleLogin = async (sender) => {
+      try {
+        // 1. 调用登录（unwrap 会解开 Promise 并直接返回 data 或抛出 error）
+        const result = await login(sender.data).unwrap();
+        console.log("result",result);
+        // 2. 存储 Token
+        localStorage.setItem('access_token', result.access_token);
+        localStorage.setItem('refresh_token', result.refresh_token);
+        // 3. 跳转
+        navigate(from, { replace: true });
+      } catch (err) {
+        alert('登录失败，请检查邮箱或者密码。');
+        console.error('登录失败:', err);
+      }
     };
     // 2. 先移除舊的，再添加新的（雙重保險）
     survey.onComplete.clear();
@@ -49,6 +54,9 @@ const Login = () => {
         boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
       }}
     >
+      {isLoading && <p>正在验证身份...</p>}
+      {error && <p style={{ color: 'red' }}>错误: {error.data?.message}</p>}
+
       <h2 style={{ textAlign: 'center' }}>用户登录</h2>
       <Survey model={survey} />
       <div style={{ textAlign: 'center', marginTop: '15px' }}>

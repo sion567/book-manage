@@ -1,10 +1,12 @@
-import React from 'react';
+import { useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const pathname = location.pathname;
+
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -25,19 +27,23 @@ const Sidebar = () => {
       </div>
 
       <nav style={navStyle}>
-        <Link to="/" style={navItemStyle(isActive('/'))}>
-          <span style={iconStyle}>🏠</span> 控制台
-        </Link>
-
-        <Link to="/books" style={navItemStyle(isActive('/books'))}>
-          <span style={iconStyle}>📖</span> 图书列表
-        </Link>
-
-        <div style={dividerStyle}></div>
-
-        <button onClick={handleLogout} style={logoutButtonStyle}>
-          <span style={iconStyle}>🚪</span> 退出登录
-        </button>
+        {isAuthenticated ? (
+          <>
+            <Link to="/" style={navItemStyle(isActive('/'))}>
+              <span style={iconStyle}>🏠</span> 控制台
+            </Link>
+            <Link to="/books" style={navItemStyle(isActive('/books'))}>
+              <span style={iconStyle}>📖</span> 图书列表
+            </Link>
+            <div style={dividerStyle}></div>
+            <span>欢迎, {user?.firstname}</span>
+            <button onClick={handleLogout} style={logoutButtonStyle}>
+              <span style={iconStyle}>🚪</span> 退出
+            </button>
+          </>
+        ) : (
+          <Link to="/login">登錄</Link>
+        )}
       </nav>
 
       <div style={footerStyle}>&copy; v2026</div>

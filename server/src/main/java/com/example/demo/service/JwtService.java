@@ -3,7 +3,9 @@ package com.example.demo.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.JwtException;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -12,7 +14,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -82,8 +86,16 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        JwtParser parser = Jwts.parser().verifyWith(getSecretKey()).build();
-        return parser.parseSignedClaims(token).getPayload();
+        try {
+            JwtParser parser = Jwts.parser().verifyWith(getSecretKey()).build();
+            return parser.parseSignedClaims(token).getPayload();
+        } catch (SignatureException | MalformedJwtException | IllegalArgumentException e) {
+            // 签名错误或格式错误，统一视为非法令牌
+            throw new BadCredentialsException("令牌无效或已被篡改");
+        } catch (JwtException e) {
+            // 3. 其他所有 JWT 相关异常
+            throw new BadCredentialsException("JWT 解析失败");
+        }
     }
 
     private SecretKey getSecretKey() {

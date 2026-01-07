@@ -1,6 +1,7 @@
 package com.example.demo.config;
 
 import com.example.demo.web.filter.JwtAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -67,7 +68,15 @@ public class SecurityConfiguration {
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class) // 过滤器验证其他请求的Token是否合法
+                .exceptionHandling(exception -> exception
+                        // 专门处理未认证（Token失效/缺失）的情况
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 明确返回 401
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"message\": \"未授权访问\"}");
+                        })
+                )
                 .logout(logout ->
                         logout.logoutUrl("/api/v1/auth/logout")
                                 .addLogoutHandler(logoutHandler)

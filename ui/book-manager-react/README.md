@@ -7,3 +7,5 @@ yarn add survey-react-ui survey-core react-router-dom
 yarn install
 yarn add --dev prettier
 yarn format
+
+yarn add @reduxjs/toolkit react-redux
