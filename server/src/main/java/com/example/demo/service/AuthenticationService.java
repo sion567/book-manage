@@ -104,12 +104,15 @@ public class AuthenticationService {
     public void refreshToken(String authHeader, HttpServletResponse response) throws IOException {
         log.debug("refreshToken......");
         final String refreshToken;
-        final String userEmail;
         if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
             return;
         }
         refreshToken = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(refreshToken);
+        refreshAccessToken(refreshToken, response);
+    }
+
+    public void refreshAccessToken(String refreshToken, HttpServletResponse response) throws IOException {
+        final String userEmail = jwtService.extractUsername(refreshToken);
         if (userEmail != null) {
             var user = this.repository.findByEmail(userEmail)
                     .orElseThrow();

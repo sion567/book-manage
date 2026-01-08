@@ -1,0 +1,10 @@
+${AnsiColor.BRIGHT_CYAN}
+  ____  ____  ____  ____  _  _  ___     ____  _____  _____  ____
+ / ___)(  _ \(  _ \(_  _)( \( )/ __)   (  _ \(  _  )(  _  )(_  _)
+ \___ \ )___/ )   / _)(_  )  (( (_-.    ) _ ( )(_)(  )(_)(   )(
+ (____/(__)  (__\_)(____)(_)\_)\___/   (____/(_____)(_____) (__)
+
+${AnsiColor.BRIGHT_MAGENTA} :: Spring Boot 3.4+ :: ${AnsiColor.BRIGHT_YELLOW} (v${spring-boot.version}) ${AnsiColor.BRIGHT_CYAN}
+${AnsiStyle.FAINT}----------------------------------------------------------------------
+${AnsiColor.BRIGHT_GREEN}  >> Status: System Online
+${AnsiStyle.NORMAL}
