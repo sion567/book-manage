@@ -1,5 +1,5 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpContext, HttpContextToken  } from '@angular/common/http';
 import { tap, switchMap, catchError, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { User } from '@shared/models/user.model';
@@ -56,11 +56,19 @@ export class AuthService {
   }
 
   refreshToken(token: string) {
-    // 注意：刷新接口通常需要发送 refresh_token
-    // 建议直接在 body 或 header 中传递
-    return this.http.post<any>(`${this.API_URL}/refresh-token`, {
-      refresh_token: token,
+    // const IS_REFRESH_TOKEN = new HttpContextToken<boolean>(() => false);
+    // return this.http.post<any>(`${this.API_URL}/refresh-token`, {}, {
+    //   headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }),
+    //   context: new HttpContext().set(IS_REFRESH_TOKEN, true)
+    // });
+    // 3. 拦截器中判断
+    // if (req.context.get(IS_REFRESH_TOKEN)) return next(req);
+
+    let headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}` // 这里的 token 必须是 refresh_token
     });
+    console.log('Sending Token:', token)
+    return this.http.post<any>(`${this.API_URL}/refresh-token`, {}, { headers });
   }
 
   /**

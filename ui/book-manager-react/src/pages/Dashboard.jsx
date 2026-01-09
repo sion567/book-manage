@@ -49,7 +49,7 @@ const Dashboard = () => {
         }}
       >
         <div className="stat-card" style={cardStyle('#4361ee')}>
-          <h3>总图书量</h3>
+          <h3>图书总数</h3>
           <div style={countStyle}>{stats.totalBooks}</div>
           <Link to="/books" style={linkStyle}>
             查看全部 →

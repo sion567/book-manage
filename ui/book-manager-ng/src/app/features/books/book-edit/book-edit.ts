@@ -52,7 +52,7 @@ export class BookEdit implements OnInit {
   }
 
   private loadCategories() {
-    this.bookService.fetchCategory().subscribe((data) => this.categories.set(data));
+    this.bookService.fetchCategories().subscribe((data) => this.categories.set(data));
   }
 
   private loadBookData(id: number) {
@@ -71,9 +71,9 @@ export class BookEdit implements OnInit {
     const bookData = this.bookForm.value;
 
     if (this.isEditMode()) {
-      this.bookService.update(this.bookId!, bookData).subscribe(() => this.goBack());
+      this.bookService.updateBook(this.bookId!, bookData).subscribe(() => this.goBack());
     } else {
-      this.bookService.create(bookData).subscribe(() => this.goBack());
+      this.bookService.createBook(bookData).subscribe(() => this.goBack());
     }
   }
 

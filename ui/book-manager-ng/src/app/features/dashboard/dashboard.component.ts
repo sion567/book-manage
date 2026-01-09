@@ -1,5 +1,7 @@
 import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { timer, switchMap, forkJoin } from 'rxjs';
 import { AuthService } from '@core/auth/auth.service';
 import { BookService } from '../books/book.service';
 
@@ -26,6 +28,11 @@ import { BookService } from '../books/book.service';
         <div class="stat-card">
           <h3>图书总数</h3>
           <p class="big-number">{{ totalBooks() }}</p>
+          <a routerLink="/books" routerLinkActive="active">查看全部 →</a>
+        </div>
+        <div class="stat-card">
+          <h3>分类数量</h3>
+          <p class="big-number">{{ totalCategories() }}</p>
         </div>
 
         <div class="stat-card">
@@ -34,10 +41,6 @@ import { BookService } from '../books/book.service';
         </div>
       </main>
 
-      <section class="quick-actions">
-        <button class="action-btn">管理图书</button>
-        <button class="action-btn">查看个人资料</button>
-      </section>
     </div>
   `,
   styles: [
@@ -111,6 +114,37 @@ export default class DashboardComponent {
   // user() 会自动从 AuthService 的 currentUser Signal 获取最新值
   user = this.authService.currentUser;
 
-  // 使用 computed 计算图书总数（派生状态）
-  totalBooks = computed(() => this.bookService.books().length);
+  // 每 5 秒触发一次请求 (0 表示立即开始，5000 表示间隔)
+  private refresh$ = timer(0, 5000);
+
+  // 1. 获取图书数据并转为 Signal
+  books = toSignal(
+    this.refresh$.pipe(switchMap(() => this.bookService.fetchBooks())),
+    { initialValue: [] }
+  );
+
+  // 2. 获取分类数据并转为 Signal
+  categories = toSignal(
+    this.refresh$.pipe(switchMap(() => this.bookService.fetchCategories())),
+    { initialValue: [] }
+  );
+
+
+ // 方案二. 定义轮询流
+  // private data$ = timer(0, 5000).pipe(
+  //   switchMap(() => 
+  //     // forkJoin 作用等同于 Promise.all
+  //     forkJoin({
+  //       books: this.bookService.fetchBooks(),
+  //       categories: this.bookService.fetchCategories()
+  //     })
+  //   )
+  // );
+
+
+
+
+  // 3. 使用 computed 计算图书总数（派生状态） (当 books 或 categories 变化时自动更新)
+  totalBooks = computed(() => this.books().length);
+  totalCategories = computed(() => this.categories().length);
 }

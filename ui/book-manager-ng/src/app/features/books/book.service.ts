@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Book, Category, BookRequest } from '@shared/models/book.model';
 import { tap, Observable, forkJoin } from 'rxjs';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: 'root' }) // 定义服务（Service）的标准推荐方式,全自动的“单例模式”管理和极致的性能优化。
 export class BookService {
   private http = inject(HttpClient);
   private readonly API_URL = '/api/v1/books';
@@ -14,7 +14,7 @@ export class BookService {
   books = this.booksSignal.asReadonly();
 
   private categorySignal = signal<Category[]>([]);
-  category = this.categorySignal.asReadonly();
+  categories = this.categorySignal.asReadonly();
 
   /**
    * 从后端获取图书列表
@@ -23,7 +23,7 @@ export class BookService {
     return this.http.get<Book[]>(this.API_URL).pipe(tap((data) => this.booksSignal.set(data)));
   }
 
-  fetchCategory() {
+  fetchCategories() {
     return this.http
       .get<Category[]>(`${this.API_URL}/categories`)
       .pipe(tap((data) => this.categorySignal.set(data)));
@@ -48,11 +48,11 @@ export class BookService {
     );
   }
 
-  create(book: BookRequest): Observable<number> {
+  createBook(book: BookRequest): Observable<number> {
     return this.http.post<number>(this.API_URL, book);
   }
 
-  update(id: number, book: BookRequest): Observable<void> {
+  updateBook(id: number, book: BookRequest): Observable<void> {
     return this.http.put<void>(`${this.API_URL}/${id}`, book);
   }
 

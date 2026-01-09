@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '@core/auth/auth.service';
 import { LogPipe } from '@shared/pipes/log.pipe';
@@ -17,6 +17,7 @@ import { LogPipe } from '@shared/pipes/log.pipe';
         <input type="text" formControlName="lastname" placeholder="设置用户名" /><br />
         <input type="email" formControlName="email" placeholder="电子邮箱" /><br />
         <input type="password" formControlName="password" placeholder="设置密码" /><br />
+        <input type="password" formControlName="confirmPassword" placeholder="确认密码" /><br />
         <button type="submit" [disabled]="registerForm.invalid">提交注册</button>
       </form>
     </div>
@@ -28,6 +29,17 @@ export class RegisterComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
+  // 自定义验证器：检查两个字段是否匹配
+  private passwordMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+    const password = control.get('password');
+    const confirmPassword = control.get('confirmPassword');
+
+    // 如果两个控件都存在且值不相等，返回错误对象
+    return password && confirmPassword && password.value !== confirmPassword.value 
+      ? { passwordMismatch: true } 
+      : null;
+  };
+
   errorMessage = signal<string | null>(null);
   isSubmitting = signal(false);
 
@@ -35,8 +47,12 @@ export class RegisterComponent {
     firstname: ['', Validators.required],
     lastname: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    confirmPassword: ['', [Validators.required]],
     role: ['USER'],
+  }, { 
+    // 关键点：在组级别添加验证器
+    validators: this.passwordMatchValidator 
   });
 
   onRegister() {

@@ -19,6 +19,11 @@ const refreshTokenSubject: BehaviorSubject<string | null> = new BehaviorSubject<
 );
 
 export const apiInterceptor: HttpInterceptorFn = (req, next) => {
+  console.log("url", req.url);
+  // 1. 如果请求的是刷新接口，直接放行，不要覆盖它的 Header
+  if (req.url.includes('/refresh-token')) {
+    return next(req);
+  }
   const authService = inject(AuthService);
   const router = inject(Router);
 
@@ -29,6 +34,8 @@ export const apiInterceptor: HttpInterceptorFn = (req, next) => {
   let authReq = req;
   if (accessToken && accessToken !== 'undefined') {
     authReq = addTokenHeader(req, accessToken);
+  } else {
+    authReq = req;
   }
 
   // 3. 执行请求并处理错误
@@ -63,8 +70,7 @@ function handle401Error(
     refreshTokenSubject.next(null);
 
     const refreshToken = localStorage.getItem('refresh_token');
-
-    if (!refreshToken || refreshToken === 'undefined') {
+    if (!refreshToken || refreshToken === 'undefined' || refreshToken === 'null') {
       return logoutAndRedirect(authService, router);
     }
 
