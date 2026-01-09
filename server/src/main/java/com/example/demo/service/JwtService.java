@@ -37,7 +37,9 @@ public class JwtService {
     private String audience;
 
     public String generateToken(UserDetails userDetails) {
-        return generateToken(userDetails, new HashMap<>());
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("nonce", System.nanoTime());
+        return generateToken(userDetails, extraClaims);
     }
 
     public String generateToken(UserDetails userDetails, Map<String, Object> extraClaims) {
@@ -45,7 +47,9 @@ public class JwtService {
     }
 
     public String generateRefreshToken(UserDetails userDetails) {
-        return buildToken(userDetails, new HashMap<>(), refreshExpiration);
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("nonce", System.nanoTime());
+        return buildToken(userDetails, extraClaims, refreshExpiration);
     }
 
     private String buildToken(UserDetails userDetails, Map<String, Object> extraClaims, long expire) {

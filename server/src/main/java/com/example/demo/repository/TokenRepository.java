@@ -5,7 +5,9 @@ import java.util.Optional;
 
 import com.example.demo.domain.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface TokenRepository extends JpaRepository<Token, Integer> {
 
@@ -17,4 +19,8 @@ public interface TokenRepository extends JpaRepository<Token, Integer> {
     List<Token> findAllValidTokenByUser(Integer id);
 
     Optional<Token> findByToken(String token);
+
+    @Modifying
+    @Query("UPDATE Token t SET t.expired = true, t.revoked = true WHERE t.user.id = :userId AND (t.expired = false OR t.revoked = false)")
+    void deactivateAllUserTokens(@Param("userId") Integer userId);
 }
