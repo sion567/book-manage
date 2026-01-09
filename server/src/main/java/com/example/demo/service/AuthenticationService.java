@@ -28,6 +28,7 @@ import java.io.IOException;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class AuthenticationService {
     private final UserRepository repository;
     private final TokenRepository tokenRepository;
@@ -54,7 +55,6 @@ public class AuthenticationService {
                 .build();
     }
 
-    @Transactional
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         log.debug("正在认证用户: {}", request.getEmail());
         try {
