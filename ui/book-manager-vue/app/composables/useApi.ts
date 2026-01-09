@@ -2,15 +2,38 @@ import type { FetchResponse, FetchOptions } from 'ofetch'
 
 // 定义钩子参数的接口，方便阅读
 interface ResponseErrorContext {
-  response: FetchResponse<any>,
+  response: FetchResponse<any>
   options: FetchOptions
 }
 
-export const useApi = (url: string, opts: any = {}) => {
+// 在 Nuxt 4 架构中，实现“前端无感知刷新”的核心在于：将刷新逻辑完全下沉到 Nuxt Server 层（Nitro）。前端 useApi 只需要简单请求 /api/...，不再需要编写任何拦截器或手动调用刷新。
+export const useApi = <T>(url: string, opts?: any) => {
   const authStore = useAuthStore()
-  const config = useRuntimeConfig()
+  // 注意：前端只需请求 /api/xxx，不要手动写 try-catch 刷新
+  return $fetch<T>(url, {
+    ...opts,
+    onRequest({ options }: { options: FetchOptions }) {
+      if (authStore.accessToken) {
+        options.headers = {
+          ...options.headers,
+          Authorization: `Bearer ${authStore.accessToken}`,
+        }
+      }
+    },
+    onResponseError({ response }) {
+      if (response.status === 401) {
+        // 如果服务器返回 401，说明 Refresh Token 也过期了，直接踢回登录页
+        authStore.logout()
+      }
+    }
+  })
+}
 
-  return $fetch(url, {
+/*
+export const useApi = <T>(url: string, opts: any = {}) => {
+  const authStore = useAuthStore()
+
+  return $fetch<T>(url, {
     ...opts,
     // 1. 请求拦截：自动注入 Access Token
     onRequest({ options }: { options: FetchOptions }) {
@@ -30,7 +53,6 @@ export const useApi = (url: string, opts: any = {}) => {
 
         if (refreshToken.value) {
           try {
-            // 请求 Spring Boot 的刷新接口
             const { access } = await $fetch<{ access: string }>('/api/auth/refresh', {
               method: 'POST',
               body: { refresh: refreshToken.value }, // 将 Refresh Token 传给后端
@@ -57,3 +79,4 @@ export const useApi = (url: string, opts: any = {}) => {
     },
   })
 }
+*/

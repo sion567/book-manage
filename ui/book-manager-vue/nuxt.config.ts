@@ -2,6 +2,9 @@
 export default defineNuxtConfig({
   modules: ['@pinia/nuxt', '@nuxt/eslint', '@nuxtjs/sitemap'],
   devtools: { enabled: true },
+  site: {
+    url: 'https://your-library-site.com',
+  },
   runtimeConfig: {
     // 这里的 key 只能在 server/ 目录下访问（私密）
     springJwtSecret: 'default-secret-key',
@@ -21,13 +24,10 @@ export default defineNuxtConfig({
       stylistic: true, // 开启格式化功能（缩进、引号等）
     },
   },
-  site: {
-    url: 'https://your-library-site.com'
-  },
   sitemap: {
     // 告诉模块如何获取动态路由
     sources: [
-      '/api/sitemap-urls' // 你可以创建一个简单的接口返回 URL 列表
-    ]
-  }
+      '/api/sitemap-urls', // 你可以创建一个简单的接口返回 URL 列表
+    ],
+  },
 })

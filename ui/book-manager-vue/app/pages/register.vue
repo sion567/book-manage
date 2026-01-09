@@ -2,8 +2,6 @@
 import { z } from 'zod'
 import { RegisterSchema, type RegisterInput } from '#shared/schemas/auth'
 
-definePageMeta({ layout: 'auth' })
-
 const formData = reactive<RegisterInput>({
   firstname: '',
   lastname: '',
@@ -26,34 +24,44 @@ const handleRegister = async () => { // const 箭头函数
   }
   formErrors.value = {}
 
-  const { error } = await useFetch('/api/auth/register', {
-    method: 'POST',
-    body: formData,
-  })
+  // useFetch：是一个 组合式函数 (Composable)。它的设计初衷是用于 页面初始化 阶段（即在 setup 顶层直接运行），以便 Nuxt 能够处理服务端渲染 (SSR) 和数据水合。
+  // $fetch：是一个 普通函数。它用于 交互触发 的场景（如点击按钮、提交表单、定时器轮询）。
+  // const { error } = await useFetch('/api/auth/register', {
+  //   method: 'POST',
+  //   body: formData,
+  // })
+  // if (!error.value) {
+  //   alert('注册成功！请登录')
+  //   navigateTo('/login')
+  // }
 
-  if (!error.value) {
+  try {
+    const data = await $fetch('/api/auth/register', {
+      method: 'POST',
+      body: formData,
+    })
     alert('注册成功！请登录')
     navigateTo('/login')
+  }
+  catch (err) {
+    console.log(err)
+    alert('注册失败！')
   }
 }
 </script>
 
 <template>
   <div>
-    <h2 class="text-center text-3xl font-extrabold text-gray-900">
+    <h2>
       创建新账号
     </h2>
-    <form
-      class="mt-8 space-y-4"
-      @submit.prevent="handleRegister"
-    >
+    <form @submit.prevent="handleRegister">
       <div>
         <input
           v-model="formData.firstname"
           type="text"
           required
           placeholder="姓"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md"
         >
       </div>
       <div>
@@ -62,7 +70,6 @@ const handleRegister = async () => { // const 箭头函数
           type="text"
           required
           placeholder="名"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md"
         >
       </div>
       <div>
@@ -71,9 +78,8 @@ const handleRegister = async () => { // const 箭头函数
           type="email"
           required
           placeholder="邮箱"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md"
         >
-        <span v-if="formErrors.email" class="text-red-500">
+        <span v-if="formErrors.email">
           {{ formErrors.email?.errors?.[0] }}
         </span>
       </div>
@@ -83,8 +89,10 @@ const handleRegister = async () => { // const 箭头函数
           type="password"
           required
           placeholder="设置密码"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md"
         >
+        <span v-if="formErrors.password">
+          {{ formErrors.password?.errors?.[0] }}
+        </span>
       </div>
       <div>
         <input
@@ -92,26 +100,17 @@ const handleRegister = async () => { // const 箭头函数
           type="password"
           required
           placeholder="确认密码"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md"
         >
-        <span v-if="formErrors.confirmPassword" class="text-red-500">
+        <span v-if="formErrors.confirmPassword">
           {{ formErrors.confirmPassword?.errors?.[0] }}
         </span>
       </div>
 
       <button
         type="submit"
-        class="w-full py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
       >
         注册
       </button>
-
-      <p class="text-center text-sm">
-        <NuxtLink
-          to="/login"
-          class="text-blue-600"
-        >返回登录</NuxtLink>
-      </p>
     </form>
   </div>
 </template>

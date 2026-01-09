@@ -2,8 +2,8 @@ export default defineNuxtRouteMiddleware((to, from) => {
   // 1. 获取用户登录状态（通常从 Pinia 或 Cookie 中获取）
   const auth = useAuthStore()
 
-  // 1. 白名单：排除登录、注册及公开页面
-  const publicPages = ['/login', '/register', '/public-info']
+  // 1. 白名单：排除登录、注册
+  const publicPages = ['/login', '/register']
   if (publicPages.includes(to.path)) {
     return
   }

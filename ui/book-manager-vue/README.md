@@ -5,7 +5,7 @@ npm install pinia @pinia/nuxt
 npm install zod
 
 如何 TypeScript 的类型定义没有更新。请按照以下步骤解决：
-生成开发目录：在终端运行 npx nuxi prepare。这会重新生成 .nuxt 目录下的类型文件。
+生成开发目录：在终端运行 **npx nuxi prepare**。这会重新生成 .nuxt 目录下的类型文件。
 
 npx nuxi@latest module add sitemap
 
