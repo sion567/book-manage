@@ -2,26 +2,30 @@ import { defineStore } from 'pinia'
 import type { LoginInput, UserProfile } from '#shared/schemas/auth'
 
 export const useAuthStore = defineStore('auth', () => {
-  const accessToken = useCookie('access_token', {
+  const accessToken = useCookie<string | null>('access_token', {
     maxAge: 60 * 60 * 24, // 1天有效
     path: '/',
-    watch: true // 开启监听，确保多个标签页同步
+    watch: true, // 开启监听，确保多个标签页同步
   })
-  const refreshToken = useCookie('refresh_token', { maxAge: 60 * 60 * 24 * 7, path: '/', sameSite: 'lax' })
+  const refreshToken = useCookie<string | null>('refresh_token', { maxAge: 60 * 60 * 24 * 7, path: '/', sameSite: 'lax' })
   const user = ref<UserProfile | null>(null)
 
   function clearAuth() {
     accessToken.value = null
+    refreshToken.value = null
     user.value = null
   }
 
+  function updateTokens(access: string, refresh: string) {
+    accessToken.value = access
+    refreshToken.value = refresh
+  }
 
   // 获取资料的逻辑
   const fetchUserProfile = async () => {
     if (!accessToken.value) return
     try {
-      const userData = await useApi<UserProfile>('/api/users/profile')
-      user.value = userData
+      user.value = await useApi<UserProfile>('/api/users/profile')
     } catch (err) {
       // 如果获取资料失败（如 Token 彻底失效），则清理状态
       logout()
@@ -42,23 +46,26 @@ export const useAuthStore = defineStore('auth', () => {
       method: 'POST',
       body: credentials,
     })
-    accessToken.value = data.access_token 
+    accessToken.value = data.access_token
     refreshToken.value = data.refresh_token
     await fetchUserProfile()
     await navigateTo('/')
   }
 
   async function logout() {
-    await $fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
+    await useApi('/api/auth/logout', { method: 'POST' }).catch(() => {})
     clearAuth()
     await navigateTo('/login')
   }
 
   return {
     accessToken,
+    refreshToken,
+    updateTokens,
     user,
     initAuth,
     login,
     logout,
+    clearAuth,
   }
 })

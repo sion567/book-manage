@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Book } from '#shared/schemas/book'
 
-const { fetchBooks, removeBook } = useBookService()
+const { useLazyBooks, removeBook } = useBookService()
 
 /*
 const {
@@ -11,8 +11,8 @@ const {
   refresh         // 一个函数，调用它可以重新触发查询
 } = await useAsyncData<Book[]>('books-list', () => useApi('/api/books'))
 */
-
-const { data: books, pending, error, refresh } = fetchBooks()
+const page = ref(1)
+const { data: books, pending, error, refresh } = useLazyBooks(page)
 
 /*
 Pinia 的 Store 在 Nuxt 中会自动导入，你可以直接在页面中调用。

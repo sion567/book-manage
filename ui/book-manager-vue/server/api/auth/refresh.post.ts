@@ -2,7 +2,7 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   const refreshToken = getCookie(event, 'refresh_token')
 
-  const response = await $fetch<{ accessToken: string }>(
+  const response = await $fetch<{ accessToken: string, refreshToken: string }>(
     `${config.public.apiUrl}/api/v1/auth/refresh-token`,
     {
       method: 'POST',
