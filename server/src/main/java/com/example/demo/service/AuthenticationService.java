@@ -82,12 +82,12 @@ public class AuthenticationService {
     }
 
     public void refreshToken(String authHeader, HttpServletResponse response) throws IOException {
-        log.debug("refreshToken......");
         final String refreshToken;
         if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
             return;
         }
         refreshToken = authHeader.substring(7);
+        log.debug("refreshToken, token:{}", refreshToken);
         refreshAccessToken(refreshToken, response);
     }
 

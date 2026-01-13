@@ -8,6 +8,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.JwtException;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import io.jsonwebtoken.security.SignatureException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 
 @Service
+@Slf4j
 public class JwtService {
 
     @Value("${application.security.jwt.secret-key:long1234long1234long1234long1234}")
@@ -91,12 +94,14 @@ public class JwtService {
 
     private Claims extractAllClaims(String token) {
         try {
-            JwtParser parser = Jwts.parser().verifyWith(getSecretKey()).build();
+            JwtParser parser = Jwts.parser().verifyWith(getSecretKey()).clockSkewSeconds(5).build();
             return parser.parseSignedClaims(token).getPayload();
         } catch (SignatureException | MalformedJwtException | IllegalArgumentException e) {
+            log.warn("令牌无效或已被篡改", e);
             // 签名错误或格式错误，统一视为非法令牌
             throw new BadCredentialsException("令牌无效或已被篡改");
         } catch (JwtException e) {
+            log.warn("JWT 解析失败");
             // 3. 其他所有 JWT 相关异常
             throw new BadCredentialsException("JWT 解析失败");
         }

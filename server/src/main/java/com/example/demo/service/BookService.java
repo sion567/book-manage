@@ -9,6 +9,8 @@ import com.example.demo.repository.CategoryRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +43,10 @@ public class BookService {
 
     public List<Book> findAll() {
         return repository.findAll();
+    }
+
+    public Page<Book> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     public Book findById(Integer id) {

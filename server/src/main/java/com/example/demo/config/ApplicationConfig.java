@@ -22,12 +22,9 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        System.out.println("--- 系统启动：正在初始化 UserDetailsService Bean ---");
         return username -> {
-            System.out.println("--- 收到登录请求，正在查询用户: " + username + " ---");
             var user = repository.findByEmail(username)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-            System.out.println("fullname:"+user.getFirstname()+" "+user.getLastname());
             return user;
         };
     }
