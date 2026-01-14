@@ -1,8 +1,8 @@
 import { Component, inject, input, computed, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { BookService } from '../book.service';
-import { Book } from '@shared/models/book.model';
+import { BookService } from '../data-access/book.service';
+import { Book } from '../data-access/book.model';
 
 @Component({
   selector: 'app-book-detail',

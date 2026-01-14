@@ -1,9 +1,11 @@
 import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { timer, switchMap, forkJoin } from 'rxjs';
+import { tap, timer, switchMap, forkJoin } from 'rxjs';
 import { AuthService } from '@core/auth/auth.service';
-import { BookService } from '../books/book.service';
+import { BookService } from '@features/books/data-access/book.service';
+import { Book } from '@features/books/data-access/book.model';
+import { Page } from '@shared/models/page.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -117,10 +119,21 @@ export default class DashboardComponent {
   // 每 5 秒触发一次请求 (0 表示立即开始，5000 表示间隔)
   private refresh$ = timer(0, 5000);
 
+//Code Smell
+// Service 里的signal已经有值,组件里的 categories() 信号也有值了
+
   // 1. 获取图书数据并转为 Signal
   books = toSignal(
-    this.refresh$.pipe(switchMap(() => this.bookService.fetchBooks())),
-    { initialValue: [] }
+    this.refresh$.pipe(
+      switchMap(() => this.bookService.fetchBooks(0, 1))
+    ),
+    {
+      initialValue: {
+        content: [],
+        totalElements: 0,
+        totalPages: 0
+      } as Page<Book> 
+    }
   );
 
   // 2. 获取分类数据并转为 Signal
@@ -145,6 +158,6 @@ export default class DashboardComponent {
 
 
   // 3. 使用 computed 计算图书总数（派生状态） (当 books 或 categories 变化时自动更新)
-  totalBooks = computed(() => this.books().length);
+  totalBooks = computed(() => this.books().totalElements);
   totalCategories = computed(() => this.categories().length);
 }

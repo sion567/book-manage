@@ -2,8 +2,8 @@ import { Component, inject, input, computed, signal, OnInit } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { BookService } from '../book.service';
-import { Book, Category } from '@shared/models/book.model';
+import { BookService } from '../data-access/book.service';
+import { Book } from '../data-access/book.model';
 
 @Component({
   selector: 'app-book-edit',
