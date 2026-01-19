@@ -142,6 +142,12 @@ export default class DashboardComponent {
     { initialValue: [] }
   );
 
+// 在 RxJS 中，switchMap 的核心作用是 “切换”：当有新的数据发出时，它会自动取消（退订）上一个尚未完成的流，并开启一个新的流。
+// 它是处理 “竞态条件 (Race Condition)” 的神器，在 2026 年的 Angular 开发中，它是处理搜索、详情切换等功能的第一选择。
+// 想拿最新结果，放弃旧的 -> switchMap
+// 想按顺序一个一个来 -> concatMap
+// 想先执行完，不理会新的 -> exhaustMap 
+
 
  // 方案二. 定义轮询流
   // private data$ = timer(0, 5000).pipe(
@@ -153,8 +159,6 @@ export default class DashboardComponent {
   //     })
   //   )
   // );
-
-
 
 
   // 3. 使用 computed 计算图书总数（派生状态） (当 books 或 categories 变化时自动更新)

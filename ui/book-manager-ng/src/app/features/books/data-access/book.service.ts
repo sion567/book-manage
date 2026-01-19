@@ -2,7 +2,8 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Book, Category, BookRequest } from './book.model';
 import { Page } from '@shared/models/page.model';
-import { tap, Observable, forkJoin } from 'rxjs';
+import { tap, Observable, forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' }) // 定义服务（Service）的标准推荐方式,全自动的“单例模式”管理和极致的性能优化。
 export class BookService {
@@ -38,6 +39,48 @@ signal是主动控制的变量，创建一个可写信号，通过 .set()、.upd
     // return this.http.get<Page<Book>>(this.API_URL, { params }).subscribe(res => this._booksPageSignal.set(res));
   }
 
+  fetchCategories() {
+    return this.http
+      .get<Category[]>(`${this.API_URL}/categories`)
+      .pipe(tap((data) => this._categorySignal.set(data)));
+  }
+// 在 Angular 中，使用 .pipe(tap(...)) 是一种“透明监听”模式：
+// 保持响应式：它依然返回一个 Observable，外部调用者可以继续链式调用。
+// 副作用分离：tap 的含义是“我想在数据流过时顺便做点事（设置 Signal），但不改变数据本身”。
+// 现在的开发模式倾向于 “数据源 -> 操作符 -> Signal/模板” 的单向流动。使用 .pipe 可以让你在 Service 层定义好数据流向，而不需要提前触发（subscribe）它。
+// 总结：
+// 不用 .pipe，你就必须立即 .subscribe()。这会导致你的方法从“提供数据源”变成了“直接执行动作”，降低了代码的灵活性。
+// 现在的趋势是：逻辑留在 .pipe() 里，订阅交给框架（AsyncPipe 或 Signals）。
+// AsyncPipe（在模板中写作 | async）是一个内置的自动管家。它的作用是：在 HTML 模板中直接处理 Promise 或 Observable，并自动帮你订阅和取消订阅。
+
+
+
+
+// 1. 什么是订阅 (Subscribe)？
+// 当你执行 http.get 时，Angular 并没有立刻发出请求。它只是创建了一个“计划”（Observable）。
+// 动作：只有当你调用 .subscribe() 时，这个“计划”才正式启动。
+// 结果：一旦订阅成功，数据就像报纸一样，只要有更新（或者请求返回了），就会通过回调函数送到你手上。
+// 2. 什么是取消订阅 (Unsubscribe)？
+// “取消订阅”就是告诉程序：“别再给我发报纸了，我搬家了（组件销毁了）。”
+// 为什么要取消？
+// 如果你的组件已经关闭了（比如用户跳到了别的页面），但订阅还在运行，这就是内存泄漏。
+// 后果：程序会尝试在已经不存在的页面上更新数据，导致报错，或者让电脑越来越卡。
+
+// // 1. 保存订阅引用
+// private mySub: Subscription;
+
+// ngOnInit() {
+//   this.mySub = this.http.get(...).subscribe();
+// }
+
+// // 2. 在组件销毁时断开连接
+// ngOnDestroy() {
+//   this.mySub.unsubscribe(); 
+// }
+
+
+
+
   /**
    * Service 只负责返回 Observable，不持有状态，也不使用 tap
    * 使用 toSignal 配合 switchMap 驱动分页，彻底消除 tap 和手动 subscribe
@@ -53,21 +96,34 @@ signal是主动控制的变量，创建一个可写信号，通过 .set()、.upd
     return this.http.get<Page<Book>>(this.API_URL, { params });
   }
 
-
-  fetchCategories() {
-    return this.http
-      .get<Category[]>(`${this.API_URL}/categories`)
-      .pipe(tap((data) => this._categorySignal.set(data)));
+  fetchCategoriesV2(): Observable<Category[]> {
+    return this.http.get<Category[]>(`${this.API_URL}/categories`);
   }
 
   getInitialData() {
-    return forkJoin({
-      books: this.http.get<Page<Book>>(this.API_URL),
-      categories: this.http.get<Category[]>('/api/categories'),
+    return forkJoin({ // forkJoin 的特性是：任何一个流报错，整个结果都会失败。 建议为每个请求添加 catchError。
+      books: this.http.get<Page<Book>>(this.API_URL).pipe(
+        catchError(error => {
+          console.error('书籍加载失败', error);
+          return of({ content: [], totalElements: 0 }); // 返回默认分页结构
+        })
+      ),
+      categories: this.http.get<Category[]>(`${this.API_URL}/categories`).pipe(
+        catchError(error => {
+          console.error('分类加载失败', error);
+          return of([]); // 返回空数组防止模板报错
+        })
+      )
     });
   }
+// // 在 Component 中
+// data$ = this.service.getInitialData();
+// 在 Angular 和 RxJS 开发中，这种在变量名末尾加上 $ 符号的命名方式被称为 “芬兰式表示法” (Finnish Notation)。
+// data: 通常表示一个静态对象、数组或基础类型。你可以直接访问 data.id。
+// data$: 表示这是一个 Observable（可观察对象）。你不能直接访问它的属性，必须通过 .subscribe() 或在 HTML 中使用 | async 管道来获取值。
+// 这种命名方式由核心开发者 Andre Staltz（RxJS 社区的大牛）推广。因为他来自芬兰，所以社区将其戏称为“芬兰式表示法”。虽然它不是 TypeScript 或 JavaScript 的强制语法，但它已成为 Angular 社区事实上的标准。
 
-  /**
+/**
    * 删除图书
    */
   deleteBook(id: number) {

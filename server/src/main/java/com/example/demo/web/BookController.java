@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,7 +74,12 @@ public class BookController {
 
     )
     @GetMapping
-    public ResponseEntity<Page<Book>> find(@PageableDefault(size = 10) Pageable pageable) {
+    public ResponseEntity<Page<Book>> find(@PageableDefault(
+            size = 10,
+            page = 0,
+            sort = "id",
+            direction = Sort.Direction.DESC
+    ) Pageable pageable) {
         log.debug("[Books] find");
         return ResponseEntity.ok(service.findAll(pageable));
     }
