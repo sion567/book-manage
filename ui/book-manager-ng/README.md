@@ -12,7 +12,6 @@ ng g c features/books/book-list
 
 
 npm install --save-dev @types/jasmine
-npm install @ngrx/signals --save
 
 
 Angular Signals 官方架构建议

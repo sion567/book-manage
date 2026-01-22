@@ -7,5 +7,9 @@ export const API_ENDPOINTS = {
   USERS: {
     BASE: '/api/v1/users',
     PROFILE: '/api/v1/users/profile',
+  },
+  BOOKS: {
+    BASE: '/api/v1/books',
+    CATEGORY: '/api/v1/books/categories',
   }
 } as const; // 使用 as const 保证类型安全且不可修改

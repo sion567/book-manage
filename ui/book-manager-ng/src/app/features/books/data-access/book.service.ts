@@ -4,11 +4,11 @@ import { Book, Category, BookRequest } from './book.model';
 import { Page } from '@shared/models/page.model';
 import { tap, Observable, forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { API_ENDPOINTS } from '@core/constants/api.constants';
 
 @Injectable({ providedIn: 'root' }) // 定义服务（Service）的标准推荐方式,全自动的“单例模式”管理和极致的性能优化。
 export class BookService {
   private http = inject(HttpClient);
-  private readonly API_URL = '/api/v1/books';
 
 /*
 场景： 全局状态、跨页面共享的数据、需要持久化的缓存。
@@ -33,7 +33,7 @@ signal是主动控制的变量，创建一个可写信号，通过 .set()、.upd
     // pipe(tap(...)) —— 只是“预设”副作用
     // 它是惰性的（Lazy）：这段代码本身不会发送 HTTP 请求。它只是在管道里放了一个“监听器”。
     // 什么时候触发？：只有当外部有人 .subscribe() 这个方法返回的 Observable，或者在模板里用了 | async 管道时，tap 里的 set(data) 才会执行。
-    return this.http.get<Page<Book>>(this.API_URL, { params }).pipe(tap((data) => this._booksPageSignal.set(data)));
+    return this.http.get<Page<Book>>(`${API_ENDPOINTS.BOOKS.BASE}`, { params }).pipe(tap((data) => this._booksPageSignal.set(data)));
     // .subscribe(...) —— “立即”执行动作
     // 适用场景：在组件的某个具体操作中（如点击按钮 onSearch()），你明确知道现在就要发请求并更新数据。
     // return this.http.get<Page<Book>>(this.API_URL, { params }).subscribe(res => this._booksPageSignal.set(res));
@@ -41,7 +41,7 @@ signal是主动控制的变量，创建一个可写信号，通过 .set()、.upd
 
   fetchCategories() {
     return this.http
-      .get<Category[]>(`${this.API_URL}/categories`)
+      .get<Category[]>(`${API_ENDPOINTS.BOOKS.CATEGORY}`)
       .pipe(tap((data) => this._categorySignal.set(data)));
   }
 // 在 Angular 中，使用 .pipe(tap(...)) 是一种“透明监听”模式：
@@ -93,22 +93,22 @@ signal是主动控制的变量，创建一个可写信号，通过 .set()、.upd
       .set('page', page.toString())
       .set('size', size.toString());
     
-    return this.http.get<Page<Book>>(this.API_URL, { params });
+    return this.http.get<Page<Book>>(`${API_ENDPOINTS.BOOKS.BASE}`, { params });
   }
 
   fetchCategoriesV2(): Observable<Category[]> {
-    return this.http.get<Category[]>(`${this.API_URL}/categories`);
+    return this.http.get<Category[]>(`${API_ENDPOINTS.BOOKS.CATEGORY}`);
   }
 
   getInitialData() {
     return forkJoin({ // forkJoin 的特性是：任何一个流报错，整个结果都会失败。 建议为每个请求添加 catchError。
-      books: this.http.get<Page<Book>>(this.API_URL).pipe(
+      books: this.http.get<Page<Book>>(`${API_ENDPOINTS.BOOKS.BASE}`).pipe(
         catchError(error => {
           console.error('书籍加载失败', error);
           return of({ content: [], totalElements: 0 }); // 返回默认分页结构
         })
       ),
-      categories: this.http.get<Category[]>(`${this.API_URL}/categories`).pipe(
+      categories: this.http.get<Category[]>(`${API_ENDPOINTS.BOOKS.CATEGORY}`).pipe(
         catchError(error => {
           console.error('分类加载失败', error);
           return of([]); // 返回空数组防止模板报错
@@ -127,7 +127,7 @@ signal是主动控制的变量，创建一个可写信号，通过 .set()、.upd
    * 删除图书
    */
   deleteBook(id: number) {
-    return this.http.delete(`${this.API_URL}/${id}`).pipe(
+    return this.http.delete(`${API_ENDPOINTS.BOOKS.BASE}/${id}`).pipe(
       tap(() => {
         // 成功后更新本地 signal，实现无刷新 UI 更新
         this._booksPageSignal.update((currentPageState) => {
@@ -148,14 +148,14 @@ signal是主动控制的变量，创建一个可写信号，通过 .set()、.upd
   }
 
   createBook(book: BookRequest): Observable<number> {
-    return this.http.post<number>(this.API_URL, book);
+    return this.http.post<number>(`${API_ENDPOINTS.BOOKS.BASE}`, book);
   }
 
   updateBook(id: number, book: BookRequest): Observable<void> {
-    return this.http.put<void>(`${this.API_URL}/${id}`, book);
+    return this.http.put<void>(`${API_ENDPOINTS.BOOKS.BASE}/${id}`, book);
   }
 
   fetchBookById(id: number): Observable<Book> {
-    return this.http.get<Book>(`${this.API_URL}/${id}`);
+    return this.http.get<Book>(`${API_ENDPOINTS.BOOKS.BASE}/${id}`);
   }
 }
