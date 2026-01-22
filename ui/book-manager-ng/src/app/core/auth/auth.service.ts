@@ -4,15 +4,12 @@ import { tap, switchMap, catchError, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { User } from '@shared/models/user.model';
 import { AuthResponse } from '@shared/models/auth.model';
-import { environment } from '@env/environment';
 import { API_ENDPOINTS } from '@core/constants/api.constants';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
-
-  private readonly USER_URL = '/api/v1/users';
 
   // 使用 signal 存储当前用户信息
   private currentUserSignal = signal<User | null>(null);
@@ -26,7 +23,7 @@ export class AuthService {
    * @param credentials 包含 username 和 password
    */
   login(credentials: any) {
-    return this.http.post<AuthResponse>(`${this.API_URL}/authenticate`, credentials).pipe(
+    return this.http.post<AuthResponse>(`${API_ENDPOINTS.AUTH.BASE}/authenticate`, credentials).pipe(
       tap((response) => {
         console.log('后端原始响应:', response); // 调试用
         if (response) {
@@ -48,7 +45,7 @@ export class AuthService {
   }
 
   fetchUserProfile() {
-    return this.http.get<User>(`${this.USER_URL}/profile`).pipe(
+    return this.http.get<User>(`${API_ENDPOINTS.USERS.PROFILE}`).pipe(
       tap((user) => {
         // 2. 更新 Signal 状态
         this.currentUserSignal.set(user);

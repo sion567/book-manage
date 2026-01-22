@@ -1,0 +1,31 @@
+<div class="dashboard-container">
+    <header>
+    <h1>🚀 控制台</h1>
+    <div class="user-info">
+        @if (user()) {
+        <span
+            >欢迎回来, <strong>{{ user()?.firstname }}</strong
+            >!</span
+        >
+        }
+    </div>
+    </header>
+
+    <main class="stats-grid">
+    <div class="stat-card">
+        <h3>图书总数</h3>
+        <p class="big-number">{{ totalBooks() }}</p>
+        <a routerLink="/books" routerLinkActive="active">查看全部 →</a>
+    </div>
+    <div class="stat-card">
+        <h3>分类数量</h3>
+        <p class="big-number">{{ totalCategories() }}</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>系统状态</h3>
+        <p class="status-tag">运行中</p>
+    </div>
+    </main>
+
+</div>

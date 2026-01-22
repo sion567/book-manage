@@ -7,20 +7,7 @@ import { Router } from '@angular/router';
   selector: 'app-login',
   standalone: true,
   imports: [ReactiveFormsModule],
-  template: `
-    <div class="auth-container">
-      <h2>用户登录</h2>
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <input type="text" formControlName="email" placeholder="邮箱" /><br />
-        <input type="password" formControlName="password" placeholder="密码" /><br />
-        <button type="submit" [disabled]="loginForm.invalid">登录</button>
-      </form>
-
-      @if (errorMessage) {
-        <p style="color: red;">{{ errorMessage }}</p>
-      }
-    </div>
-  `,
+  templateUrl: './login.component.html',
 })
 export class LoginComponent {
   private fb = inject(FormBuilder);

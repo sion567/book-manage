@@ -9,19 +9,7 @@ import { LogPipe } from '@shared/pipes/log.pipe';
   standalone: true,
   imports: [ReactiveFormsModule],
   providers: [LogPipe], // 必須在這裡或全局註冊為 Provider
-  template: `
-    <div class="auth-container">
-      <h2>新用户注册</h2>
-      <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
-        <input type="text" formControlName="firstname" placeholder="设置用户姓" /><br />
-        <input type="text" formControlName="lastname" placeholder="设置用户名" /><br />
-        <input type="email" formControlName="email" placeholder="电子邮箱" /><br />
-        <input type="password" formControlName="password" placeholder="设置密码" /><br />
-        <input type="password" formControlName="confirmPassword" placeholder="确认密码" /><br />
-        <button type="submit" [disabled]="registerForm.invalid">提交注册</button>
-      </form>
-    </div>
-  `,
+  templateUrl: './register.component.html',
 })
 export class RegisterComponent {
   private fb = inject(NonNullableFormBuilder);
