@@ -35,7 +35,7 @@
             <td>{{ book.publicationDate | date }}</td>
             <td>
               <button [routerLink]="['/books/edit', book.id]" class="btn-icon edit">编辑</button>
-              <button (click)="onDelete(book.id)" class="btn-icon delete" title="删除">删除</button>
+              <button (click)="onDelete(book.id)" class="btn-icon delete">删除</button>
             </td>
           </tr>
         } @empty {

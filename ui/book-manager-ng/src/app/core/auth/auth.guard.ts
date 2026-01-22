@@ -2,6 +2,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from './auth.service';
 
+// 这是一个函数常量。它本身就是一个符合 CanActivateFn 签名的 Guard。返回CanActivateFn 本身
 export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService); // 注入认证服务
   const router = inject(Router); // 注入路由

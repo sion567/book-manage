@@ -4,13 +4,14 @@ import { tap, switchMap, catchError, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { User } from '@shared/models/user.model';
 import { AuthResponse } from '@shared/models/auth.model';
+import { environment } from '@env/environment';
+import { API_ENDPOINTS } from '@core/constants/api.constants';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
 
-  private readonly API_URL = '/api/v1/auth';
   private readonly USER_URL = '/api/v1/users';
 
   // 使用 signal 存储当前用户信息
@@ -68,7 +69,7 @@ export class AuthService {
       'Authorization': `Bearer ${token}` // 这里的 token 必须是 refresh_token
     });
     console.log('Sending Token:', token)
-    return this.http.post<any>(`${this.API_URL}/refresh-token`, {}, { headers });
+    return this.http.post<any>(`${API_ENDPOINTS.AUTH.BASE}/refresh-token`, {}, { headers });
   }
 
   /**
@@ -84,7 +85,7 @@ export class AuthService {
    * 注册方法
    */
   register(userData: any) {
-    return this.http.post(`${this.API_URL}/register`, userData);
+    return this.http.post(`${API_ENDPOINTS.AUTH.BASE}/register`, userData);
   }
 
   getUserRole() {
