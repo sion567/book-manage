@@ -27,6 +27,12 @@ application:
       refresh-token:
         expiration: 300
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics,prometheus"
+
 logging:
  level:
    root: INFO
